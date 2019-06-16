@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 
 import 'model/products_repository.dart';
 import 'model/product.dart';
+import 'supplemental/asymmetric_view.dart';
 
 class HomePage extends StatelessWidget {
 
@@ -35,11 +36,12 @@ class HomePage extends StatelessWidget {
 
     return products.map((product) {
       return Card(
+        elevation: 0.0,
         clipBehavior: Clip.antiAlias,
         // TODO: Adjust card heights (103)
         child: Column(
           // TODO: Center items on the card (103)
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             AspectRatio(
               aspectRatio: 18 / 11,
@@ -54,19 +56,22 @@ class HomePage extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
                 child: Column(
                   // TODO: Align labels to the bottom and center (103)
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   // TODO: Change innermost Column (103)
                   children: <Widget>[
                     // TODO: Handle overflowing labels (103)
                     Text(
-                      product.name,
+                      product == null ? '' : product.name,
                       style: theme.textTheme.title,
-                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
                     SizedBox(height: 8.0),
                     Text(
-                      formatter.format(product.price),
-                      style: theme.textTheme.body2,
+                      product == null ? '' : formatter.format(product.price),
+                      style: theme.textTheme.caption,
                     ),
                   ],
                 ),
@@ -84,45 +89,31 @@ class HomePage extends StatelessWidget {
     // TODO: Return an AsymmetricView (104)
     // TODO: Pass Category variable to AsymmetricView (104)
     return Scaffold(
-      // TODO: Add app bar (102)
       appBar: AppBar(
-        title: Text('SHRINE'),
-        leading: IconButton(icon: Icon(
-            Icons.menu,
-            semanticLabel: 'menu',
-        ), onPressed: () {
+        brightness: Brightness.dark,
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
             print('Menu button');
-        }),
+          },
+        ),
+        title: Text('SHRINE'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(
-              Icons.search,
-              semanticLabel: 'search',
-            ),
+            icon: Icon(Icons.search),
             onPressed: () {
               print('Search button');
             },
           ),
           IconButton(
-            icon: Icon(
-              Icons.tune,
-              semanticLabel: 'filter',
-            ),
+            icon: Icon(Icons.tune),
             onPressed: () {
               print('Filter button');
             },
-          )
+          ),
         ],
       ),
-      // TODO: Add a grid view (102)
-      body: GridView.count(
-          crossAxisCount: 2,
-        padding: EdgeInsets.all(16.0),
-        childAspectRatio: 8.0 / 9.0,
-        children: _buildGridCards(context),
-      ),
-      // TODO: Set resizeToAvoidBottomInset (101)
-      resizeToAvoidBottomPadding: false,
+      body: AsymmetricView(products: ProductsRepository.loadProducts(Category.all)),
     );
   }
 }
